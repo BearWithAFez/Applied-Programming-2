@@ -1,0 +1,15 @@
+Heb reeds enige voorkennis van wpf dus geen vooronderzoek
+Bekijk voorbeeld code en Kopieer grotendeels CUBE
+Probeer CUBE te OOP'en
+Cube is niet zichtbaar - Canvas niet gelinkt met Modelgroups => Geen cube of licht in WPF
+Merkt op dat Cube Textures verkeerd zijn - Ook zo in Demo code...
+Na googlen ondervind dat Textures gelinkt zijn aan corneres en dus het ONMOGELIJK is met 8 punten.
+	Oftewel opsplitsen in elk vlak een andere mesh
+	Overlappende punten. => Top en bot unieke punten voor indices en Textures
+Speelt wat met Light en beseft dat Ambient beter gaat zijn wegens schaduwen te verwarrend gaan zijn.
+Speelt wat met camera en bekijkt enkele videos voor de verschillende props te begrijpen
+Speelt wat met de Animaties
+Maakt Googlet een Maze VB om na te bouwen.
+Maakt in Minecraft een mockup. (simpel te gebruiken en aan te passen)
+Maakt JSON File met de codes voor elk blokje
+Zoekt Textures op en probeert ze uit
