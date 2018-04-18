@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HelixToolkit.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,83 +23,46 @@ namespace MazeGame
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<BlockType> blockTypes = new List<BlockType>();
         public MainWindow()
         {
             InitializeComponent();
+            blockTypes.Add(new BlockType() { BlockCode = 'G', TexturePath = "Resources\\Ground.jpg" });
+            blockTypes.Add(new BlockType() { BlockCode = 'W', TexturePath = "Resources\\Wall.jpg" });
+            blockTypes.Add(new BlockType() { BlockCode = 'B', TexturePath = "Resources\\Base.jpg" });
+            blockTypes.Add(new BlockType() { BlockCode = 'F', TexturePath = "Resources\\Finish.jpg" });
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
+        {            
             // Simple block
             Point3D[] blokPunten = { new Point3D(0.5, 0.5, 0.5), new Point3D(-0.5, 0.5, 0.5), new Point3D(-0.5, -0.5, 0.5), new Point3D(0.5, -0.5, 0.5), new Point3D(0.5, 0.5, -0.5), new Point3D(-0.5, 0.5, -0.5), new Point3D(-0.5, -0.5, -0.5), new Point3D(0.5, -0.5, -0.5)};
-            var blok = new Block(blokPunten, @"Resources\Hout.jpg");
-            var blok2 = new Block(blokPunten, @"Resources\Hout.jpg");
+            //var blok = new Block(blokPunten, @"Resources\Ground.jpg");
+            //var blok2 = new Block(blokPunten, @"Resources\Wall.jpg");
+
+            var finBlok = new Block(new Point3D(-1, 0, 0), blockTypes.Where(t => t.BlockCode == 'F').ToList()[0]);
+            var baseBlok = new Block(new Point3D(0, 0, 0), blockTypes.Where(t => t.BlockCode == 'B').ToList()[0]);
+
             // Simple light
             var light = new AmbientLight()
             {
                 Color = Colors.White
             };
 
-            // Simple camera
-            var camera = new PerspectiveCamera()
-            {
-                FieldOfView = 45,
-                Position = new Point3D(0,2,3),
-                LookDirection = new Vector3D(0,-2,-3),
-                UpDirection = new Vector3D(0,1,0)
-            };
-
             // Model elements
             var modelGrp = new Model3DGroup();
-            modelGrp.Children.Add(blok.Model);
-            modelGrp.Children.Add(blok2.Model);
-            modelGrp.Children.Add(light);
-
-            // Viewport
-            var viewport = new Viewport3D()
-            {
-                Camera = camera,
-                Height = 500,
-                Width = 500
-            };
-            viewport.Children.Add(new ModelVisual3D() { Content = modelGrp });
-            mainCanvas.Children.Add(viewport);
-
-            // Canvas
-            Canvas.SetTop(viewport, 0);
-            Canvas.SetLeft(viewport, 0);
-
-            // TransformGroup
-            var transforms = new Transform3DGroup();
-            blok.Model.Transform = transforms;
-            var transforms2 = new Transform3DGroup();
-            blok2.Model.Transform = transforms2;
-
-            // Rotation
-            var rotAxis = new AxisAngleRotation3D(new Vector3D(0,1,0),0);
-            var rotation = new RotateTransform3D(rotAxis);
-            var rotAngle = new DoubleAnimation()
-            {
-                From = 0,
-                To = 360,
-                Duration = new Duration(TimeSpan.FromSeconds(20.0)),
-                RepeatBehavior = RepeatBehavior.Forever
-            };
-            transforms.Children.Add(rotation);
-            transforms2.Children.Add(rotation);
-
-            // Translate
-            transforms2.Children.Add(new TranslateTransform3D(.77, 0, 0));
-            transforms.Children.Add(new TranslateTransform3D(-.77, 0, 0));
+            //modelGrp.Children.Add(blok.Model);
+            //modelGrp.Children.Add(blok2.Model);
+            modelGrp.Children.Add(finBlok.Model);
+            modelGrp.Children.Add(baseBlok.Model);
+            modelGrp.Children.Add(light);            
+            HelixViewport.Children.Add(new ModelVisual3D() { Content = modelGrp });
 
             // Final linking (?)
-            NameScope.SetNameScope(mainCanvas, new NameScope());
-            mainCanvas.RegisterName("rotAxis", rotAxis);
-            Storyboard.SetTargetName(rotAngle, "rotAxis");
-            Storyboard.SetTargetProperty(rotAngle, new PropertyPath(AxisAngleRotation3D.AngleProperty));
-            var rotCube = new Storyboard();
-            rotCube.Children.Add(rotAngle);
-            rotCube.Begin(mainCanvas);
+            NameScope.SetNameScope(HelixViewport, new NameScope());
+            HelixViewport.Camera.Position = new Point3D(0, 0, 10);
+            HelixViewport.Camera.LookDirection = new Vector3D(0, 0, -1);
+            HelixViewport.Camera.UpDirection = new Vector3D(0, 1, 0);
         }
     }
 }

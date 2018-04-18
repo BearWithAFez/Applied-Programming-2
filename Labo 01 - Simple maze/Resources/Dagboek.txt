@@ -13,3 +13,6 @@ Maakt Googlet een Maze VB om na te bouwen.
 Maakt in Minecraft een mockup. (simpel te gebruiken en aan te passen)
 Maakt JSON File met de codes voor elk blokje
 Zoekt Textures op en probeert ze uit
+Schrijft een ctor voor simpel cubes te maken vanaf 1 gegeven punt (p6)
+	Probleem met indices, binnen ipv buiten
+	
