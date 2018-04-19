@@ -34,3 +34,5 @@ Made a new maze to test hotswapping in MC
 	Smaller maze with all textures still
 Testing hotswap
 	WORKS
+Added Camera field
+Cleaned up code

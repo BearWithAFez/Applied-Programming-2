@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -10,27 +6,24 @@ using System.Windows.Media.Media3D;
 
 namespace MazeGame
 {
-    public struct BlockType
-    {
-        public string TexturePath;
-        public char BlockCode;
-    }
-
     public class Block
     {
-        // Helpers
-        private static Int32[] INDICES = { 0, 2, 1, 0, 3, 2, 4, 6, 7, 4, 5, 6, 4, 3, 0, 4, 7, 3, 1, 6, 5, 1, 2, 6, 9, 12, 8, 9, 13, 12, 10, 15, 14, 10, 11, 15 }; // outsides
-        //  { 0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 4, 0, 3, 4, 3, 7, 1, 5, 6, 1, 6, 2, 9, 8, 12, 9, 12, 13, 10, 14, 15, 10, 15, 11 }; // insides
+        #region Helpers
+        private static Int32[] INDICES = { 0, 2, 1, 0, 3, 2, 4, 6, 7, 4, 5, 6, 4, 3, 0, 4, 7, 3, 1, 6, 5, 1, 2, 6, 9, 12, 8, 9, 13, 12, 10, 15, 14, 10, 11, 15 };   // outsides
+        //  { 0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 4, 0, 3, 4, 3, 7, 1, 5, 6, 1, 6, 2, 9, 8, 12, 9, 12, 13, 10, 14, 15, 10, 15, 11 };                                // insides
+        #endregion Helpers
 
-        // Fields
-        public GeometryModel3D Model = new GeometryModel3D(); 
+        #region Fields
+        public GeometryModel3D Model = new GeometryModel3D();
         public MeshGeometry3D Mesh = new MeshGeometry3D();
         public Point3DCollection Corners = new Point3DCollection();
         public Transform3DGroup Transformations = new Transform3DGroup();
+        #endregion Fields
 
-        // Constructors
+        #region Constructors
         public Block(Point3D UFL, BlockType type)
         {
+            // Generate all other points
             Point3D[] points = {
                 new Point3D(UFL.X + 1, UFL.Y + 1, UFL.Z + 1),
                 new Point3D(UFL.X, UFL.Y + 1, UFL.Z + 1),
@@ -49,8 +42,9 @@ namespace MazeGame
         {
             Init(points, textureUrl);
         }
+        #endregion Constructors
 
-        // Helper Methods
+        #region Helper Methods
         private void Init(Point3D[] points, string textureUrl)
         {
             // Preparation
@@ -74,7 +68,7 @@ namespace MazeGame
             // Indices, grouped per 3 decide wich corners make a triangle            
             foreach (var indice in INDICES) triangles.Add(indice);
 
-            // Textures, Same as corners
+            // Textures, Linked to corners as corners
             texturePoints.Add(new Point(1, 0));
             texturePoints.Add(new Point(0, 0));
             texturePoints.Add(new Point(0, 1));
@@ -95,5 +89,6 @@ namespace MazeGame
             texturePoints.Add(new Point(0, 1));
             texturePoints.Add(new Point(1, 1));
         }
+        #endregion Helper Methods
     }
 }

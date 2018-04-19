@@ -10,25 +10,32 @@ using System.Windows.Media.Media3D;
 
 namespace MazeGame
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private List<BlockType> blockTypes = new List<BlockType>();
-        private OpenFileDialog ofd = new OpenFileDialog() { Filter = "json files (*.json)|*.json", RestoreDirectory = true };
-        private Model3DGroup modelGrp = new Model3DGroup();
-        private MazeData currentMazeData = new MazeData();
+        #region Private fields
+        private OpenFileDialog ofd = new OpenFileDialog() { Filter = "json files (*.json)|*.json", RestoreDirectory = true }; // The OFD for Reading the Maze JSON's
+        private Model3DGroup modelGrp = new Model3DGroup(); // The container for each element (cubes and light)
+        private MazeData currentMazeData = new MazeData(); // The Maze data that's currently in use
+        private List<BlockType> blockTypes = new BlockType[] 
+        {
+            new BlockType() { BlockCode = 'G', TexturePath = "Resources\\Ground.jpg" },
+            new BlockType() { BlockCode = 'W', TexturePath = "Resources\\Wall.jpg" },
+            new BlockType() { BlockCode = 'B', TexturePath = "Resources\\Base.jpg" },
+            new BlockType() { BlockCode = 'F', TexturePath = "Resources\\Finish.jpg" }
+        }.ToList(); // All types of possible blocks
+        #endregion Private fields
 
+        #region Constructors
         public MainWindow()
         {
             InitializeComponent();
-            blockTypes.Add(new BlockType() { BlockCode = 'G', TexturePath = "Resources\\Ground.jpg" });
-            blockTypes.Add(new BlockType() { BlockCode = 'W', TexturePath = "Resources\\Wall.jpg" });
-            blockTypes.Add(new BlockType() { BlockCode = 'B', TexturePath = "Resources\\Base.jpg" });
-            blockTypes.Add(new BlockType() { BlockCode = 'F', TexturePath = "Resources\\Finish.jpg" });
         }
+        #endregion Constructors
 
+        #region Events
+        /// <summary>
+        /// Basic on Load pre-setter
+        /// </summary>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // reset field
@@ -37,20 +44,104 @@ namespace MazeGame
             // Model elements
             HelixViewport.Children.Add(new ModelVisual3D() { Content = modelGrp });
 
-            // Final linking (?)
-            // Todo: explain this
-            NameScope.SetNameScope(HelixViewport, new NameScope());
-            HelixViewport.Camera.Position = new Point3D(0, 0, 40);
-            HelixViewport.Camera.LookDirection = new Vector3D(0, 0, -1);
-            HelixViewport.Camera.UpDirection = new Vector3D(0, 1, 0);
+            // Camera setup
+            ResetCamera();
+
+            // Final linking
+            NameScope.SetNameScope(HelixViewport, new NameScope()); // needed for animations etc
         }
 
+        /// <summary>
+        /// Load data
+        /// </summary>
+        private void MenuItemOpen_Click(object sender, RoutedEventArgs e)
+        {
+            // File loading
+            if (ofd.ShowDialog() == true)
+            {
+                // Reset the Model
+                ResetModel();
+
+                // Read data
+                Stream myStream;
+                MazeData readData = new MazeData();
+                try
+                {
+                    if ((myStream = ofd.OpenFile()) != null) using (StreamReader r = new StreamReader(myStream)) readData = JsonConvert.DeserializeObject<MazeData>(r.ReadToEnd());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error reading the file! MSG>" + ex.Message);
+                    return;
+                }
+
+                // Check data
+                if (readData.CameraHeight == 0) // No camera Height
+                {
+                    Console.WriteLine("Error reading the file! (No CameraHeight)");
+                    return;
+                }
+                if (readData.CodeSingle == null) // No CodeSingle
+                {
+                    Console.WriteLine("Error reading the file! (No code)");
+                    return;
+                }
+                if (readData.Size == null) // No dimensions
+                {
+                    Console.WriteLine("Error reading the file! (No Size)");
+                    return;
+                }
+                if (readData.Size.Count != 3) // Wrong # of dimensions
+                {
+                    Console.WriteLine("Error reading the file! (Wrong Size number, 3 expected)");
+                    return;
+                }
+                if (readData.Size[0] * readData.Size[1] * readData.Size[2] != readData.CodeSingle.Length) // Dimensions and String not compatible
+                {
+                    Console.WriteLine("Error reading the file! (Size and Code do not match in number!) - Size:" + (readData.Size[0] * readData.Size[1] * readData.Size[2]) + " Code:" + readData.CodeSingle.Length);
+                    return;
+                }
+
+                // Sync current
+                currentMazeData = readData;
+
+                // Set camera
+                ResetCamera();
+
+                // AddCubes
+                AddCubesFromCurrentData();
+
+                Console.WriteLine("Loaded in new data: " + currentMazeData.Title);
+            }
+        }
+        #endregion Events
+
+        #region Private methods
+        /// <summary>
+        /// Empties the current model and re-adds the lights
+        /// </summary>
         private void ResetModel()
         {
             // Empty everything and add simple light
             modelGrp.Children = new Model3DCollection { new AmbientLight() { Color = Colors.White } };
         }
 
+        /// <summary>
+        /// Resets the camera back to starting position and height defined by CurrentMazData
+        /// </summary>
+        private void ResetCamera()
+        {
+            HelixViewport.Camera = new PerspectiveCamera() // OrthoCam is weird and feels unnatural
+            {
+                Position = new Point3D(0, 0, currentMazeData.CameraHeight),
+                LookDirection = new Vector3D(0, 0, -1),
+                UpDirection = new Vector3D(0, 1, 0)
+            };
+        }
+
+        /// <summary>
+        /// Uses CurrentMazeData to make cubes and adds it to the model
+        /// </summary>
         private void AddCubesFromCurrentData()
         {
             // Set Limits, string and counter
@@ -76,49 +167,6 @@ namespace MazeGame
                 }
             }
         }
-
-        private void MenuItemOpen_Click(object sender, RoutedEventArgs e)
-        {
-            // File loading
-            if (ofd.ShowDialog() == true)
-            {
-                // Reset the Model
-                ResetModel();
-
-                // Read data
-                Stream myStream;
-                MazeData readData = new MazeData();
-                try
-                {
-                    if ((myStream = ofd.OpenFile()) != null) using (StreamReader r = new StreamReader(myStream)) readData = JsonConvert.DeserializeObject<MazeData>(r.ReadToEnd());
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error reading the file! MSG>" + ex.Message);
-                    return;
-                }
-                // Check data
-                // Todo: Say why it failed
-                if (readData.CodeSingle == null) return; // No CodeSingle
-                if (readData.Size == null) return; // No dimensions
-                if (readData.Size.Count != 3) return; // Wrong # of dimensions
-                if (readData.Size[0] * readData.Size[1] * readData.Size[2] != readData.CodeSingle.Length) return; // Dimensions and String not compatible
-
-                // Sync current
-                currentMazeData = readData;
-
-                // AddCubes
-                AddCubesFromCurrentData();
-
-                Console.WriteLine("Loaded in new data: " + currentMazeData.Title);
-            }
-        }
-    }
-
-    public struct MazeData
-    {
-        public string Title;
-        public List<int> Size;
-        public string CodeSingle;
+        #endregion Private methods
     }
 }

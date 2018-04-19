@@ -1,4 +1,3 @@
 - Add Ball
-- Add Camera Height to JSON
 - Link Ball to base
 - Ball animation (Drop ball in?)
