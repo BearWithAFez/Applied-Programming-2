@@ -21,3 +21,5 @@ Tested it with dimensions 2-2-2 and string "BEEFEGWE"
 	Forgot to use a counter to loop over the String
 	Forgot to increase counter for Empty blocks aswell -> Start at -1 and increase BEFORE adding
 	All good now
+Trying it with the big string now
+	It worked! No issues!
