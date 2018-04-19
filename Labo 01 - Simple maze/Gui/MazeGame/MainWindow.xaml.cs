@@ -37,18 +37,8 @@ namespace MazeGame
             // Model elements
             HelixViewport.Children.Add(new ModelVisual3D() { Content = modelGrp });
 
-            // Test data TODO: delete this
-            currentMazeData = new MazeData()
-            {
-                Title = "Test Data",
-                Size = (new int[] {24,28,2}).ToList(),
-                CodeSingle = "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFFGGGGGGGGGGGGGGGGGGGGGGFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGEEGGGGGGEEGGGGEEGGGGGGGGEEGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGEEGGGGGEEGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBGGGGGGGGEEGGGGGGGGGGGGBBGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGEEGGGGEEGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWWWWWWWEEEEEEEEEEEEEEWEEEEEEEWWEEEEEEEEEEEEEEWEEEEEEEWWEEEEEEEEEEEEEEWEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEWEEEEEEEEEEEEWWEEEEEEEEEWEEEEEEEEEEEEWWEEEEEEEEEWEEEEEEEEEEEEWWWWWEEEWWWWWWWWWWWWWWWWWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWWWWWWWWWWWEEEWWWWEEEEEWEEEEEEEEEEEEEEEEWWEEEEEWEEEEEEEEEEEEEEEEWWEEEEEWEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEWEEEEEEWEEEEEEWWEEEEEEEEWEEEEEEWEEEEEEWWEEEEEEEEWEEEEEEWEEEEEEWWWWWWWWWWWWWWWWWWWWWWWWW"
-            };
-
-            // Blocks
-            AddCubesFromCurrentData();
-
             // Final linking (?)
+            // Todo: explain this
             NameScope.SetNameScope(HelixViewport, new NameScope());
             HelixViewport.Camera.Position = new Point3D(0, 0, 40);
             HelixViewport.Camera.LookDirection = new Vector3D(0, 0, -1);
@@ -97,20 +87,30 @@ namespace MazeGame
 
                 // Read data
                 Stream myStream;
-                MazeData data = new MazeData();
+                MazeData readData = new MazeData();
                 try
                 {
-                    if ((myStream = ofd.OpenFile()) != null) using (StreamReader r = new StreamReader(myStream)) data = JsonConvert.DeserializeObject<MazeData>(r.ReadToEnd());
+                    if ((myStream = ofd.OpenFile()) != null) using (StreamReader r = new StreamReader(myStream)) readData = JsonConvert.DeserializeObject<MazeData>(r.ReadToEnd());
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error reading the file! MSG>" + ex.Message);
-                    // Todo: Say "Error"
+                    return;
                 }
-                // Todo: Check data for errors!
-                // Todo: Sync current
-                // Todo: AddCubes
-                // Todo: Say "succses"
+                // Check data
+                // Todo: Say why it failed
+                if (readData.CodeSingle == null) return; // No CodeSingle
+                if (readData.Size == null) return; // No dimensions
+                if (readData.Size.Count != 3) return; // Wrong # of dimensions
+                if (readData.Size[0] * readData.Size[1] * readData.Size[2] != readData.CodeSingle.Length) return; // Dimensions and String not compatible
+
+                // Sync current
+                currentMazeData = readData;
+
+                // AddCubes
+                AddCubesFromCurrentData();
+
+                Console.WriteLine("Loaded in new data: " + currentMazeData.Title);
             }
         }
     }

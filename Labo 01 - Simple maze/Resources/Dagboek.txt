@@ -27,4 +27,10 @@ Added a reader
 	Works
 Tries to make a "reset" method
 	just "new"-ing the model doesnt work, just "new" the children (the group of all the elements)
-Modified the AddCubes for MazeData structs. now only need to link the two
+Modified the AddCubes for MazeData structs. 
+Tested the link
+	WORKS!
+Made a new maze to test hotswapping in MC
+	Smaller maze with all textures still
+Testing hotswap
+	WORKS

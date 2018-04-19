@@ -15,8 +15,8 @@
         <h:HelixViewport3D x:Name="HelixViewport" Grid.Row="1"/>
         <DockPanel Grid.Row="0">
             <Menu DockPanel.Dock="Top">
-                <MenuItem Header="_File">
-                    <MenuItem Header="_Open" Click="MenuItemOpen_Click"/>
+                <MenuItem Header="_Menu">
+                    <MenuItem Header="_Open Maze" Click="MenuItemOpen_Click"/>
                 </MenuItem>
             </Menu>
             <StackPanel></StackPanel>
