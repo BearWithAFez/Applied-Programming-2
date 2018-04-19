@@ -41,21 +41,9 @@ namespace MazeGame
 
             // Simple light
             modelGrp.Children.Add(new AmbientLight() { Color = Colors.White });
-
-            /*
+            
             // Blocks
-            var res = AddCubesFromString(new Point3D(2, 2, 2), "BEFEEGEW", modelGrp);
-            */
-
-            // Simple blocks
-            var finBlok = new Block(new Point3D(-1, 0, 0), blockTypes.Where(t => t.BlockCode == 'F').ToList()[0]);
-            modelGrp.Children.Add(finBlok.Model);
-            var baseBlok = new Block(new Point3D(0, 0, 0), blockTypes.Where(t => t.BlockCode == 'B').ToList()[0]);
-            modelGrp.Children.Add(baseBlok.Model);
-            var wallBlok = new Block(new Point3D(-1, -1, 0), blockTypes.Where(t => t.BlockCode == 'W').ToList()[0]);
-            modelGrp.Children.Add(wallBlok.Model);
-            var grondBlok = new Block(new Point3D(0, -1, 0), blockTypes.Where(t => t.BlockCode == 'G').ToList()[0]);
-            modelGrp.Children.Add(grondBlok.Model);
+            var res = AddCubesFromString(new Point3D(2, 2, 2), "BEEFEGWE", modelGrp);
 
             // Final linking (?)
             NameScope.SetNameScope(HelixViewport, new NameScope());
@@ -64,14 +52,13 @@ namespace MazeGame
             HelixViewport.Camera.UpDirection = new Vector3D(0, 1, 0);
         }
         
-        /*
         private bool AddCubesFromString(Point3D dimensions, string codeString, Model3DGroup mdlGrp)
         {
             // Wrong dimensions
             if (dimensions.X * dimensions.Y * dimensions.Z != codeString.Length) return false;
 
             // Counter
-            var counter = 0;
+            var counter = -1;
 
             // Loop over all Layers
             for (var z = -dimensions.Z / 2; z < dimensions.Z / 2; z++)
@@ -82,6 +69,7 @@ namespace MazeGame
                     // Loop over all Cubes
                     for (var x = -dimensions.X / 2; x < dimensions.X / 2; x++)
                     {
+                        counter++;
                         if (codeString[counter] == 'E') continue; // Empty block
                         mdlGrp.Children.Add(new Block(new Point3D(x, y, z), blockTypes.Where(t => t.BlockCode == codeString[counter]).ToList()[0]).Model);
                     }
@@ -89,6 +77,5 @@ namespace MazeGame
             }
             return true;
         }
-        */
     }
 }

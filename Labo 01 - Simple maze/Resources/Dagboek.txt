@@ -17,3 +17,7 @@ Schrijft een ctor voor simpel cubes te maken vanaf 1 gegeven punt (p6)
 	Probleem met indices, binnen ipv buiten
 Maakt een versie waar alle 4 uitgeprobeerd worden.
 Implementeerd de String to Cubes	
+Tested it with dimensions 2-2-2 and string "BEEFEGWE"
+	Forgot to use a counter to loop over the String
+	Forgot to increase counter for Empty blocks aswell -> Start at -1 and increase BEFORE adding
+	All good now
