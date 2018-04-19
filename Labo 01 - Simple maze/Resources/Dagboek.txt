@@ -23,3 +23,7 @@ Tested it with dimensions 2-2-2 and string "BEEFEGWE"
 	All good now
 Trying it with the big string now
 	It worked! No issues!
+Added a reader
+	Works
+Tries to make a "reset" method
+	just "new"-ing the model doesnt work, just "new" the children (the group of all the elements)
