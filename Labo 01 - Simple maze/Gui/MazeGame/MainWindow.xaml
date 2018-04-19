@@ -7,6 +7,15 @@
         xmlns:h="http://helix-toolkit.org/wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="500" Loaded="Window_Loaded">
-        <h:HelixViewport3D x:Name="HelixViewport">        
-        </h:HelixViewport3D>
+    <Grid>
+        <h:HelixViewport3D x:Name="HelixViewport" />
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open" Click="MenuItemOpen_Click"/>
+                </MenuItem>
+            </Menu>
+            <StackPanel></StackPanel>
+        </DockPanel>
+    </Grid>
 </Window>

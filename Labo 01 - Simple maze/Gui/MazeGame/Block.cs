@@ -18,7 +18,7 @@ namespace MazeGame
 
     public class Block
     {
-        // Helpers                      x
+        // Helpers
         private static Int32[] INDICES = { 0, 2, 1, 0, 3, 2, 4, 6, 7, 4, 5, 6, 4, 3, 0, 4, 7, 3, 1, 6, 5, 1, 2, 6, 9, 12, 8, 9, 13, 12, 10, 15, 14, 10, 11, 15 }; // outsides
         //  { 0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 4, 0, 3, 4, 3, 7, 1, 5, 6, 1, 6, 2, 9, 8, 12, 9, 12, 13, 10, 14, 15, 10, 15, 11 }; // insides
 
