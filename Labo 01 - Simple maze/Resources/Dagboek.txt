@@ -27,3 +27,4 @@ Added a reader
 	Works
 Tries to make a "reset" method
 	just "new"-ing the model doesnt work, just "new" the children (the group of all the elements)
+Modified the AddCubes for MazeData structs. now only need to link the two

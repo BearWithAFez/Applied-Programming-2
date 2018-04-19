@@ -37,8 +37,16 @@ namespace MazeGame
             // Model elements
             HelixViewport.Children.Add(new ModelVisual3D() { Content = modelGrp });
 
+            // Test data TODO: delete this
+            currentMazeData = new MazeData()
+            {
+                Title = "Test Data",
+                Size = (new int[] {24,28,2}).ToList(),
+                CodeSingle = "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFFGGGGGGGGGGGGGGGGGGGGGGFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGEEGGGGGGEEGGGGEEGGGGGGGGEEGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGEEGGGGGEEGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBGGGGGGGGEEGGGGGGGGGGGGBBGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGEEGGGGEEGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWWWWWWWEEEEEEEEEEEEEEWEEEEEEEWWEEEEEEEEEEEEEEWEEEEEEEWWEEEEEEEEEEEEEEWEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEWEEEEEEEEEEEEWWEEEEEEEEEWEEEEEEEEEEEEWWEEEEEEEEEWEEEEEEEEEEEEWWWWWEEEWWWWWWWWWWWWWWWWWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWWWWWWWWWWWEEEWWWWEEEEEWEEEEEEEEEEEEEEEEWWEEEEEWEEEEEEEEEEEEEEEEWWEEEEEWEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEWEEEEEEWEEEEEEWWEEEEEEEEWEEEEEEWEEEEEEWWEEEEEEEEWEEEEEEWEEEEEEWWWWWWWWWWWWWWWWWWWWWWWWW"
+            };
+
             // Blocks
-            var res = AddCubesFromString(new Point3D(24, 28, 2), "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFFGGGGGGGGGGGGGGGGGGGGGGFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGEEGGGGGGEEGGGGEEGGGGGGGGEEGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGEEGGGGGEEGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBGGGGGGGGEEGGGGGGGGGGGGBBGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGEEGGGGEEGGGGGGGGGGGGGGGGEEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWWWWWWWEEEEEEEEEEEEEEWEEEEEEEWWEEEEEEEEEEEEEEWEEEEEEEWWEEEEEEEEEEEEEEWEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEWEEEEEEEEEEEEWWEEEEEEEEEWEEEEEEEEEEEEWWEEEEEEEEEWEEEEEEEEEEEEWWWWWEEEWWWWWWWWWWWWWWWWWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWWWWWWWWWWWEEEWWWWEEEEEWEEEEEEEEEEEEEEEEWWEEEEEWEEEEEEEEEEEEEEEEWWEEEEEWEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEEEEEEEEEEEEEEEWWEEEEEEEEWEEEEEEWEEEEEEWWEEEEEEEEWEEEEEEWEEEEEEWWEEEEEEEEWEEEEEEWEEEEEEWWWWWWWWWWWWWWWWWWWWWWWWW");
+            AddCubesFromCurrentData();
 
             // Final linking (?)
             NameScope.SetNameScope(HelixViewport, new NameScope());
@@ -49,29 +57,27 @@ namespace MazeGame
 
         private void ResetModel()
         {
-            // Empty everything
-            modelGrp.Children = new Model3DCollection();
-
-            // Simple light
-            modelGrp.Children.Add(new AmbientLight() { Color = Colors.White });
+            // Empty everything and add simple light
+            modelGrp.Children = new Model3DCollection { new AmbientLight() { Color = Colors.White } };
         }
-        
-        private bool AddCubesFromString(Point3D dimensions, string codeString)
-        {
-            // Wrong dimensions
-            if (dimensions.X * dimensions.Y * dimensions.Z != codeString.Length) return false;
 
-            // Counter
+        private void AddCubesFromCurrentData()
+        {
+            // Set Limits, string and counter
+            var X = currentMazeData.Size[0];
+            var Y = currentMazeData.Size[1];
+            var Z = currentMazeData.Size[2];
+            var codeString = currentMazeData.CodeSingle;
             var counter = -1;
 
             // Loop over all Layers
-            for (var z = -dimensions.Z / 2; z < dimensions.Z / 2; z++)
+            for (var z = -Z / 2; z < Z / 2; z++)
             {
                 // Loop over all Rows
-                for (var y = dimensions.Y / 2; y > -dimensions.Y / 2; y--)
+                for (var y = Y / 2; y > -Y / 2; y--)
                 {
                     // Loop over all Cubes
-                    for (var x = -dimensions.X / 2; x < dimensions.X / 2; x++)
+                    for (var x = -X / 2; x < X / 2; x++)
                     {
                         counter++;
                         if (codeString[counter] == 'E') continue; // Empty block
@@ -79,10 +85,9 @@ namespace MazeGame
                     }
                 }
             }
-            return true;
         }
 
-        private bool MenuItemOpen_Click(object sender, RoutedEventArgs e)
+        private void MenuItemOpen_Click(object sender, RoutedEventArgs e)
         {
             // File loading
             if (ofd.ShowDialog() == true)
@@ -99,8 +104,13 @@ namespace MazeGame
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error reading the file!");
+                    Console.WriteLine("Error reading the file! MSG>" + ex.Message);
+                    // Todo: Say "Error"
                 }
+                // Todo: Check data for errors!
+                // Todo: Sync current
+                // Todo: AddCubes
+                // Todo: Say "succses"
             }
         }
     }
@@ -109,8 +119,6 @@ namespace MazeGame
     {
         public string Title;
         public List<int> Size;
-        public List<string> CodeCompact;
-        public List<string> CodeBig;
         public string CodeSingle;
     }
 }
