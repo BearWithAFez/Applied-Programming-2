@@ -13,3 +13,5 @@ Popup - https://stackoverflow.com/questions/11499932/wpf-popup-window
 Menu bar - https://stackoverflow.com/questions/9936796/create-a-menu-bar-in-wpf
 Grid - https://www.wpftutorial.net/GridLayout.html
 Stucts - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/using-structs
+Button Presses - https://social.msdn.microsoft.com/Forums/vstudio/en-US/9e1a598d-1ce6-4d43-9b25-3bebb513b21b/touch-long-press-on-buttons-in-wpf?forum=wpf
+Rotations and multitransforms - https://docs.microsoft.com/en-us/dotnet/framework/wpf/graphics-multimedia/how-to-apply-multiple-transformations-to-a-3-d-model

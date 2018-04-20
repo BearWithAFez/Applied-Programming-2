@@ -16,13 +16,14 @@ namespace MazeGame
         private OpenFileDialog ofd = new OpenFileDialog() { Filter = "json files (*.json)|*.json", RestoreDirectory = true }; // The OFD for Reading the Maze JSON's
         private Model3DGroup modelGrp = new Model3DGroup(); // The container for each element (cubes and light)
         private MazeData currentMazeData = new MazeData(); // The Maze data that's currently in use
-        private List<BlockType> blockTypes = new BlockType[] 
+        private List<BlockType> blockTypes = new BlockType[]
         {
             new BlockType() { BlockCode = 'G', TexturePath = "Resources\\Ground.jpg" },
             new BlockType() { BlockCode = 'W', TexturePath = "Resources\\Wall.jpg" },
             new BlockType() { BlockCode = 'B', TexturePath = "Resources\\Base.jpg" },
             new BlockType() { BlockCode = 'F', TexturePath = "Resources\\Finish.jpg" }
         }.ToList(); // All types of possible blocks
+        private bool[] tiltDirection = { false, false, false, false }; // Up,Right,Down,Left
         #endregion Private fields
 
         #region Constructors
@@ -114,6 +115,35 @@ namespace MazeGame
                 Console.WriteLine("Loaded in new data: " + currentMazeData.Title);
             }
         }
+
+        /// <summary>
+        /// Key Press
+        /// </summary>
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            // Update tilts
+            if (e.Key == System.Windows.Input.Key.NumPad8) tiltDirection[0] = true; // up
+            if (e.Key == System.Windows.Input.Key.NumPad6) tiltDirection[1] = true; // right
+            if (e.Key == System.Windows.Input.Key.NumPad2) tiltDirection[2] = true; // down
+            if (e.Key == System.Windows.Input.Key.NumPad4) tiltDirection[3] = true; // left
+            TiltBoard();
+
+            // Camera Reset
+            if (e.Key == System.Windows.Input.Key.NumPad5) ResetCamera(); // midle
+        }
+
+        /// <summary>
+        /// Key Release
+        /// </summary>
+        private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            // Update tilts
+            if (e.Key == System.Windows.Input.Key.NumPad8) tiltDirection[0] = false; // up
+            if (e.Key == System.Windows.Input.Key.NumPad6) tiltDirection[1] = false; // right
+            if (e.Key == System.Windows.Input.Key.NumPad2) tiltDirection[2] = false; // down
+            if (e.Key == System.Windows.Input.Key.NumPad4) tiltDirection[3] = false; // left
+            TiltBoard();
+        }
         #endregion Events
 
         #region Private methods
@@ -166,6 +196,19 @@ namespace MazeGame
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Aplies a rotateTransform on the board depending on the TiltDir[]
+        /// </summary>
+        private void TiltBoard()
+        {
+            var tiltVector = new Vector3D(0, 0, 0);
+            if (tiltDirection[0]) tiltVector.X--;
+            if (tiltDirection[1]) tiltVector.Y++;
+            if (tiltDirection[2]) tiltVector.X++;
+            if (tiltDirection[3]) tiltVector.Y--;
+            modelGrp.Transform = new RotateTransform3D() { Rotation = new AxisAngleRotation3D(tiltVector, 20) };
         }
         #endregion Private methods
     }

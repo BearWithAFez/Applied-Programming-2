@@ -36,3 +36,8 @@ Testing hotswap
 	WORKS
 Added Camera field
 Cleaned up code
+Made new events for keypresses
+	Helix already uese WASD, Arrows so i cannot detect those for some reason => cant find fix
+	Movement is bound to numpad "arrows" 8462
+	Because its hard to stack transforms I made a Array that holds wich buttons are pressed and the array flips upon press and release
+	Created a helper method that turns the board with a vector based on the Array
