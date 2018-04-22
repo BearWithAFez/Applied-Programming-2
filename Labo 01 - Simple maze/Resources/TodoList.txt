@@ -1,3 +1,2 @@
-- Add Ball
 - Link Ball to base
 - Ball animation (Drop ball in?)

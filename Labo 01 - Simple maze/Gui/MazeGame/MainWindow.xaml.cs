@@ -50,6 +50,9 @@ namespace MazeGame
 
             // Final linking
             NameScope.SetNameScope(HelixViewport, new NameScope()); // needed for animations etc
+
+            // Test
+            modelGrp.Children.Add(new Sphere(new Point3D(0, 0, 0), 100, 100, Colors.Orange).Model);
         }
 
         /// <summary>
@@ -153,7 +156,7 @@ namespace MazeGame
         private void ResetModel()
         {
             // Empty everything and add simple light
-            modelGrp.Children = new Model3DCollection { new AmbientLight() { Color = Colors.White } };
+            modelGrp.Children = new Model3DCollection { new DirectionalLight() { Color = Colors.White } };
         }
 
         /// <summary>
