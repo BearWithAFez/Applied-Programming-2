@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
@@ -10,15 +7,15 @@ namespace MazeGame
 {
     public class Sphere : Shape
     {
-        #region Private Fields
-        private static double radius = 0.4;
-        private int phi;
-        private int theta;
+        #region Fields
+        private static double radius = 0.5;
+        private int phi;    // F&B Triangles
+        private int theta;  // R&L Triangles
         private Point3D center;
         private Dictionary<Point3D, int> points = new Dictionary<Point3D, int>();
-        #endregion Private Fields
+        #endregion Fields
 
-        #region Fields
+        #region Properties
         public Point3D Center {
             get { return center; }
             set { center = value; CreateSphere(); }
@@ -31,17 +28,19 @@ namespace MazeGame
             get { return theta; }
             set { theta = value; CreateSphere(); }
         }
-        #endregion Fields
+        #endregion Properties
 
-        public Sphere(Point3D center, int phi, int theta ,Color color) : base("")
+        #region Constructors
+        public Sphere(Point3D center, int phi_theta ,Color color) : base("")
         {
             Model.Material = new DiffuseMaterial(new SolidColorBrush(color));
             this.center = center;
-            this.phi = phi;
-            this.theta = theta;
+            phi = theta = phi_theta;
             CreateSphere();
         }
+        #endregion Constructors
 
+        #region Private Methods
         private void CreateSphere()
         {
             // Constants?
@@ -100,8 +99,6 @@ namespace MazeGame
             }
         }
 
-        // Add a triangle to the indicated mesh.
-        // Reuse points so triangles share normals.
         private void AddTriangle(Point3D p0, Point3D p1, Point3D p2)
         {
             int index1, index2, index3;
@@ -140,5 +137,6 @@ namespace MazeGame
             mesh.TriangleIndices.Add(index2);
             mesh.TriangleIndices.Add(index3);
         }
+        #endregion Private Methods
     }
 }

@@ -1,0 +1,54 @@
+Heb reeds enige voorkennis van wpf dus geen vooronderzoek
+Bekijk voorbeeld code en Kopieer grotendeels CUBE
+Probeer CUBE te OOP'en
+Cube is niet zichtbaar - Canvas niet gelinkt met Modelgroups => Geen cube of licht in WPF
+Merkt op dat Cube Textures verkeerd zijn - Ook zo in Demo code...
+Na googlen ondervind dat Textures gelinkt zijn aan corneres en dus het ONMOGELIJK is met 8 punten.
+	Oftewel opsplitsen in elk vlak een andere mesh
+	Overlappende punten. => Top en bot unieke punten voor indices en Textures
+Speelt wat met Light en beseft dat Ambient beter gaat zijn wegens schaduwen te verwarrend gaan zijn.
+Speelt wat met camera en bekijkt enkele videos voor de verschillende props te begrijpen
+Speelt wat met de Animaties
+Maakt Googlet een Maze VB om na te bouwen.
+Maakt in Minecraft een mockup. (simpel te gebruiken en aan te passen)
+Maakt JSON File met de codes voor elk blokje
+Zoekt Textures op en probeert ze uit
+Schrijft een ctor voor simpel cubes te maken vanaf 1 gegeven punt (p6)
+	Probleem met indices, binnen ipv buiten
+Maakt een versie waar alle 4 uitgeprobeerd worden.
+Implementeerd de String to Cubes	
+Tested it with dimensions 2-2-2 and string "BEEFEGWE"
+	Forgot to use a counter to loop over the String
+	Forgot to increase counter for Empty blocks aswell -> Start at -1 and increase BEFORE adding
+	All good now
+Trying it with the big string now
+	It worked! No issues!
+Added a reader
+	Works
+Tries to make a "reset" method
+	just "new"-ing the model doesnt work, just "new" the children (the group of all the elements)
+Modified the AddCubes for MazeData structs. 
+Tested the link
+	WORKS!
+Made a new maze to test hotswapping in MC
+	Smaller maze with all textures still
+Testing hotswap
+	WORKS
+Added Camera field
+Cleaned up code
+Made new events for keypresses
+	Helix already uese WASD, Arrows so i cannot detect those for some reason => cant find fix
+	Movement is bound to numpad "arrows" 8462
+	Because its hard to stack transforms I made a Array that holds wich buttons are pressed and the array flips upon press and release
+	Created a helper method that turns the board with a vector based on the Array
+Na enkele bligs te lezen over spheres maken in WPF een duidelijke gevonden
+een abstracte classe gemaakt voor de gelijkheden van Spheres en Cubes in op te slaan (zoals meshes enz) genaamt shape
+Sphere gemaakt, Werkt perfect.
+Sphere geoptimaliseerd voor smoothness.
+Also changed camera back to dir
+
+Struggled alot to get simple back and forth animation
+Gave up after about 4 hours of nothingness and decided just to move the ball on tilt
+Tried Removing the ball => Update center => re-add ball
+	Gave a snake like thingy
+Made a vector and updated it everytime instead.

@@ -1,0 +1,19 @@
+Hout.jpg - https://www.jukeboxprint.com/images/Walnut_Enlarged.jpg
+Welke lichtbronnen te gebruiken - https://msdn.microsoft.com/en-us/library/system.windows.media.media3d.light(v=vs.110).aspx
+Hoe texturen met apparte vlakken - http://csharphelper.com/blog/2014/10/make-a-3d-cube-with-pictures-on-its-sides-with-xaml-and-c/
+Textures - https://msdn.microsoft.com/en-us/library/system.windows.media.media3d.meshgeometry3d.texturecoordinates(v=vs.110).aspx
+Camera - https://msdn.microsoft.com/en-us/library/system.windows.media.media3d.projectioncamera(v=vs.110).aspx
+Perspective  - https://www.youtube.com/watch?v=c_WVffzc6GU
+Maze inspiration - https://lh3.googleusercontent.com/SFmD2hYPJgXPOZPORieG8Kozu2urdXGD7r3qpWvhgiNQKuUcd6Eo5IgJDAl0EU1nz-DT=h310
+Concrete - http://www.grespania.com/cmsupload/catalogo-despiece/concrete-gris-1x1_rgb.preview.jpg
+Finish - https://www.gettyimages.be/detail/illustratie/vector-finish-flag-royalty-free-illustraties/671382102?esource=SEO_GIS_CDN_Redirect
+Base - https://www.gettyimages.be/detail/foto/blue-wall-background-royalty-free-beeld/531109151?esource=SEO_GIS_CDN_Redirect
+Helix - https://github.com/helix-toolkit/helix-toolkit/wiki/Getting-started-with-WPF-3D
+Popup - https://stackoverflow.com/questions/11499932/wpf-popup-window
+Menu bar - https://stackoverflow.com/questions/9936796/create-a-menu-bar-in-wpf
+Grid - https://www.wpftutorial.net/GridLayout.html
+Stucts - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/using-structs
+Button Presses - https://social.msdn.microsoft.com/Forums/vstudio/en-US/9e1a598d-1ce6-4d43-9b25-3bebb513b21b/touch-long-press-on-buttons-in-wpf?forum=wpf
+Rotations and multitransforms - https://docs.microsoft.com/en-us/dotnet/framework/wpf/graphics-multimedia/how-to-apply-multiple-transformations-to-a-3-d-model
+Sphere - http://csharphelper.com/blog/2015/04/draw-spheres-using-wpf-and-c/
+Smooth Sphere - http://csharphelper.com/blog/2015/04/draw-smooth-spheres-using-wpf-and-c/

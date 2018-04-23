@@ -5,17 +5,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Windows.Threading;
 
 namespace MazeGame
 {
     public partial class MainWindow : Window
     {
         #region Private fields
+        private static int ROUNDNESS = 20; // 1000 is too much - 4 is too little
+        private static Color PLAYER_COLOR = Colors.Orange; // I like orange
+        private static DateTime DATETIME_NULL = new DateTime(0);
         private OpenFileDialog ofd = new OpenFileDialog() { Filter = "json files (*.json)|*.json", RestoreDirectory = true }; // The OFD for Reading the Maze JSON's
         private Model3DGroup modelGrp = new Model3DGroup(); // The container for each element (cubes and light)
         private MazeData currentMazeData = new MazeData(); // The Maze data that's currently in use
+        private Sphere player; // Player object
         private List<BlockType> blockTypes = new BlockType[]
         {
             new BlockType() { BlockCode = 'G', TexturePath = "Resources\\Ground.jpg" },
@@ -24,6 +30,8 @@ namespace MazeGame
             new BlockType() { BlockCode = 'F', TexturePath = "Resources\\Finish.jpg" }
         }.ToList(); // All types of possible blocks
         private bool[] tiltDirection = { false, false, false, false }; // Up,Right,Down,Left
+        private Vector3D movementVector;
+        private DispatcherTimer timer = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 0, 0, 10) };
         #endregion Private fields
 
         #region Constructors
@@ -48,11 +56,8 @@ namespace MazeGame
             // Camera setup
             ResetCamera();
 
-            // Final linking
-            NameScope.SetNameScope(HelixViewport, new NameScope()); // needed for animations etc
-
-            // Test
-            modelGrp.Children.Add(new Sphere(new Point3D(0, 0, 0), 100, 100, Colors.Orange).Model);
+            // Timer
+            timer.Tick += Timer_Tick;
         }
 
         /// <summary>
@@ -122,30 +127,50 @@ namespace MazeGame
         /// <summary>
         /// Key Press
         /// </summary>
-        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             // Update tilts
-            if (e.Key == System.Windows.Input.Key.NumPad8) tiltDirection[0] = true; // up
-            if (e.Key == System.Windows.Input.Key.NumPad6) tiltDirection[1] = true; // right
-            if (e.Key == System.Windows.Input.Key.NumPad2) tiltDirection[2] = true; // down
-            if (e.Key == System.Windows.Input.Key.NumPad4) tiltDirection[3] = true; // left
-            TiltBoard();
-
-            // Camera Reset
-            if (e.Key == System.Windows.Input.Key.NumPad5) ResetCamera(); // midle
+            switch (e.Key)
+            {
+                case Key.NumPad8:
+                    tiltDirection[0] = true; // up
+                    break;
+                case Key.NumPad6:
+                    tiltDirection[1] = true; // right
+                    break;
+                case Key.NumPad2:
+                    tiltDirection[2] = true; // down
+                    break;
+                case Key.NumPad4:
+                    tiltDirection[3] = true; // left
+                    break;
+                case Key.NumPad5:
+                    ResetCamera(); // midle - Camera reset
+                    break;
+            }
         }
 
         /// <summary>
         /// Key Release
         /// </summary>
-        private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        private void Window_KeyUp(object sender, KeyEventArgs e)
         {
             // Update tilts
-            if (e.Key == System.Windows.Input.Key.NumPad8) tiltDirection[0] = false; // up
-            if (e.Key == System.Windows.Input.Key.NumPad6) tiltDirection[1] = false; // right
-            if (e.Key == System.Windows.Input.Key.NumPad2) tiltDirection[2] = false; // down
-            if (e.Key == System.Windows.Input.Key.NumPad4) tiltDirection[3] = false; // left
-            TiltBoard();
+            switch (e.Key)
+            {
+                case Key.NumPad8:
+                    tiltDirection[0] = false; // up
+                    break;
+                case Key.NumPad6:
+                    tiltDirection[1] = false; // right
+                    break;
+                case Key.NumPad2:
+                    tiltDirection[2] = false; // down
+                    break;
+                case Key.NumPad4:
+                    tiltDirection[3] = false; // left
+                    break;
+            }
         }
         #endregion Events
 
@@ -199,19 +224,42 @@ namespace MazeGame
                     }
                 }
             }
+
+            // Add the player too
+            AddPlayer();
+            timer.Start();
+        }
+
+        private void AddPlayer()
+        {
+            // Remove the current player in the view
+            if (player != null) modelGrp.Children.Remove(player.Model);
+
+            // Add the new one
+            var center = new Point3D(currentMazeData.Spawn[0], currentMazeData.Spawn[1], currentMazeData.Spawn[2]);
+            player = new Sphere(center, ROUNDNESS, PLAYER_COLOR);
+            movementVector = new Vector3D();
+            modelGrp.Children.Add(player.Model);
         }
 
         /// <summary>
         /// Aplies a rotateTransform on the board depending on the TiltDir[]
         /// </summary>
-        private void TiltBoard()
+        private void Timer_Tick(object sender, EventArgs e)
         {
+            // Tilt
             var tiltVector = new Vector3D(0, 0, 0);
             if (tiltDirection[0]) tiltVector.X--;
             if (tiltDirection[1]) tiltVector.Y++;
             if (tiltDirection[2]) tiltVector.X++;
             if (tiltDirection[3]) tiltVector.Y--;
             modelGrp.Transform = new RotateTransform3D() { Rotation = new AxisAngleRotation3D(tiltVector, 20) };
+
+            // Move the ball
+            movementVector.X += (tiltVector.Y / 10);
+            movementVector.Y -= (tiltVector.X / 10);
+            Console.WriteLine(tiltVector.ToString());
+            if (player != null) player.Model.Transform = new TranslateTransform3D(movementVector);
         }
         #endregion Private methods
     }
