@@ -9,7 +9,6 @@ Concrete - http://www.grespania.com/cmsupload/catalogo-despiece/concrete-gris-1x
 Finish - https://www.gettyimages.be/detail/illustratie/vector-finish-flag-royalty-free-illustraties/671382102?esource=SEO_GIS_CDN_Redirect
 Base - https://www.gettyimages.be/detail/foto/blue-wall-background-royalty-free-beeld/531109151?esource=SEO_GIS_CDN_Redirect
 Helix - https://github.com/helix-toolkit/helix-toolkit/wiki/Getting-started-with-WPF-3D
-Popup - https://stackoverflow.com/questions/11499932/wpf-popup-window
 Menu bar - https://stackoverflow.com/questions/9936796/create-a-menu-bar-in-wpf
 Grid - https://www.wpftutorial.net/GridLayout.html
 Stucts - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/using-structs
