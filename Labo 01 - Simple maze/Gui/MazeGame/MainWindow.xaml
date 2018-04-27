@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MazeGame"
         xmlns:h="http://helix-toolkit.org/wpf"
         mc:Ignorable="d"
-        Title="Maze Game" Height="500" Width="500" Loaded="Window_Loaded"
+        Title="Maze Game" Height="550" Width="500" Loaded="Window_Loaded"
         KeyDown="Window_KeyDown" KeyUp="Window_KeyUp">
     <Grid>
         <Grid.RowDefinitions>

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
@@ -8,134 +7,94 @@ namespace MazeGame
     public class Sphere : Shape
     {
         #region Fields
-        private static double radius = 0.5;
-        private int phi;    // F&B Triangles
-        private int theta;  // R&L Triangles
+        private double radius;
+        private int phi;        // The amount of "parts" the shape consists of top to bottom
+        private int theta;      // The amount of "parts" the shape consists of horizontaly
         private Point3D center;
-        private Dictionary<Point3D, int> points = new Dictionary<Point3D, int>();
         #endregion Fields
 
-        #region Properties
-        public Point3D Center {
-            get { return center; }
-            set { center = value; CreateSphere(); }
-        }
-        public int Phi {
-            get { return phi; }
-            set { phi = value; CreateSphere(); }
-        }
-        public int Theta {
-            get { return theta; }
-            set { theta = value; CreateSphere(); }
-        }
-        #endregion Properties
-
         #region Constructors
-        public Sphere(Point3D center, int phi_theta ,Color color) : base("")
+        /// <summary>
+        /// Creates a sphere with the given parameters
+        /// </summary>
+        /// <param name="center">Coördinates of the center</param>
+        /// <param name="radius">The radius</param>
+        /// <param name="phi">Amount of Vertical "slices"(Best between 10 - 1000)</param>
+        /// <param name="theta">Amount of Horizontal "slices"(Best between 10 - 1000)</param>
+        /// <param name="color">The color</param>
+        public Sphere(Point3D center, double radius, int phi, int theta, Color color) : base("")
         {
-            Model.Material = new DiffuseMaterial(new SolidColorBrush(color));
             this.center = center;
-            phi = theta = phi_theta;
+            this.phi = phi;
+            this.theta = theta;
+            this.radius = radius;
+            Model.Material = new DiffuseMaterial(new SolidColorBrush(color));
             CreateSphere();
+            #if DEBUG
+            Console.WriteLine("Sphere Added @ " + center);
+            #endif
         }
         #endregion Constructors
 
         #region Private Methods
+        /// <summary>
+        /// Creates a sphere based on the given values
+        /// </summary>
         private void CreateSphere()
         {
-            // Constants?
-            double dphi = Math.PI / phi;
-            double dtheta = 2 * Math.PI / theta;
+            // Calculate the deltas between points in RADs
+            double d_phi = Math.PI / phi;
+            double d_theta = 2 * Math.PI / theta;
 
-            double phi0 = 0;
-            double y0 = radius * Math.Cos(phi0);
-            double r0 = radius * Math.Sin(phi0);
-            for (int i = 0; i < phi; i++)
+            // Vertical looping (top to bot)
+            for (double curr_phi = 0; curr_phi < d_phi * phi; curr_phi += d_phi)
             {
-                double phi1 = phi0 + dphi;
-                double y1 = radius * Math.Cos(phi1);
-                double r1 = radius * Math.Sin(phi1);
+                // Pre-calc current vals
+                double curr_Z = radius * Math.Cos(curr_phi);
+                double curr_radius = radius * Math.Sin(curr_phi);
 
-                // Point ptAB has phi value A and theta value B.
-                // For example, pt01 has phi = phi0 and theta = theta1.
-                // Find the points with theta = theta0.
-                double theta0 = 0;
-                Point3D pt00 = new Point3D(
-                    center.X + r0 * Math.Cos(theta0),
-                    center.Y + y0,
-                    center.Z + r0 * Math.Sin(theta0));
-                Point3D pt10 = new Point3D(
-                    center.X + r1 * Math.Cos(theta0),
-                    center.Y + y1,
-                    center.Z + r1 * Math.Sin(theta0));
+                // Pre-calc next vals
+                double next_phi = curr_phi + d_phi;
+                double next_Z = radius * Math.Cos(next_phi);
+                double next_radius = radius * Math.Sin(next_phi);
 
-                for (int j = 0; j < theta; j++)
+                // Horizontal looping (left to right)
+                for (double curr_theta = 0; curr_theta < d_theta * theta; curr_theta += d_theta)
                 {
-                    // Find the points with theta = theta1.
-                    double theta1 = theta0 + dtheta;
-                    Point3D pt01 = new Point3D(
-                        center.X + r0 * Math.Cos(theta1),
-                        center.Y + y0,
-                        center.Z + r0 * Math.Sin(theta1));
-                    Point3D pt11 = new Point3D(
-                        center.X + r1 * Math.Cos(theta1),
-                        center.Y + y1,
-                        center.Z + r1 * Math.Sin(theta1));
+                    // Pre-calc next theta
+                    double next_theta = curr_theta + d_theta;
 
-                    // Create the triangles.
+                    // Calculate all 4 points
+                    var pt00 = new Point3D()
+                    {
+                        X = center.X + curr_radius * Math.Cos(curr_theta),
+                        Y = center.Y + curr_radius * Math.Sin(curr_theta),
+                        Z = center.Z + curr_Z
+                    };
+                    var pt10 = new Point3D()
+                    {
+                        X = center.X + next_radius * Math.Cos(curr_theta),
+                        Y = center.Y + next_radius * Math.Sin(curr_theta),
+                        Z = center.Z + next_Z
+                    };
+                    var pt01 = new Point3D()
+                    {
+                        X = center.X + curr_radius * Math.Cos(next_theta),
+                        Y = center.Y + curr_radius * Math.Sin(next_theta),
+                        Z = center.Z + curr_Z
+                    };
+                    var pt11 = new Point3D
+                    {
+                        X = center.X + next_radius * Math.Cos(next_theta),
+                        Y = center.Y + next_radius * Math.Sin(next_theta),
+                        Z = center.Z + next_Z
+                    };
+
+                    // Create the triangles
                     AddTriangle(pt00, pt11, pt10);
                     AddTriangle(pt00, pt01, pt11);
-
-                    // Move to the next value of theta.
-                    theta0 = theta1;
-                    pt00 = pt01;
-                    pt10 = pt11;
                 }
-
-                // Move to the next value of phi.
-                phi0 = phi1;
-                y0 = y1;
-                r0 = r1;
             }
-        }
-
-        private void AddTriangle(Point3D p0, Point3D p1, Point3D p2)
-        {
-            int index1, index2, index3;
-
-            // Find or create the points.
-            if (points.ContainsKey(p0)) index1 = points[p0];
-            else
-            {
-                index1 = corners.Count;
-                corners.Add(p0);
-                points.Add(p0, index1);
-            }
-
-            if (points.ContainsKey(p1)) index2 = points[p1];
-            else
-            {
-                index2 = corners.Count;
-                corners.Add(p1);
-                points.Add(p1, index2);
-            }
-
-            if (points.ContainsKey(p2)) index3 = points[p2];
-            else
-            {
-                index3 = corners.Count;
-                corners.Add(p2);
-                points.Add(p2, index3);
-            }
-
-            // If two or more of the points are
-            // the same, it's not a triangle.
-            if ((index1 == index2) || (index2 == index3) || (index3 == index1)) return;
-
-            // Create the triangle.
-            mesh.TriangleIndices.Add(index1);
-            mesh.TriangleIndices.Add(index2);
-            mesh.TriangleIndices.Add(index3);
         }
         #endregion Private Methods
     }

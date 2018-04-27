@@ -1,70 +1,58 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media.Media3D;
 
 namespace MazeGame
 {
     public class Block : Shape
     {
-        #region Helpers
-        private static double RIB = 1;
-        private static Int32[] INDICES = { 0, 2, 1, 0, 3, 2, 4, 6, 7, 4, 5, 6, 4, 3, 0, 4, 7, 3, 1, 6, 5, 1, 2, 6, 9, 12, 8, 9, 13, 12, 10, 15, 14, 10, 11, 15 };   // outsides
-        //  { 0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 4, 0, 3, 4, 3, 7, 1, 5, 6, 1, 6, 2, 9, 8, 12, 9, 12, 13, 10, 14, 15, 10, 15, 11 };                                // insides
-        #endregion Helpers
+        #region Fields
+        private Point3D[] simpleCorners; // Front top-right CCW & Back top-right CCW
+        #endregion Fields
 
         #region Constructors
-        public Block(Point3D UFL, BlockType type) : base(type.TexturePath)
+        /// <summary>
+        /// Creates a cube with the given corner and type
+        /// </summary>
+        /// <param name="edge">Size of a single edge</param>
+        /// <param name="dbl">Down-Back-Left corner coördinates</param>
+        /// <param name="type">Gives the type of cube (used for textures etc.)</param>
+        public Block(double edge, Point3D dbl, BlockType type) : base(type.TexturePath)
         {
             // Generate all other points
-            Point3D[] points = {
-                new Point3D(UFL.X + RIB, UFL.Y + RIB, UFL.Z + RIB),
-                new Point3D(UFL.X, UFL.Y + RIB, UFL.Z + RIB),
-                new Point3D(UFL.X, UFL.Y + RIB, UFL.Z),
-                new Point3D(UFL.X + RIB, UFL.Y + RIB, UFL.Z),
-                new Point3D(UFL.X + RIB, UFL.Y, UFL.Z + RIB),
-                new Point3D(UFL.X, UFL.Y, UFL.Z + RIB),
-                new Point3D(UFL.X, UFL.Y, UFL.Z),
-                new Point3D(UFL.X + RIB, UFL.Y, UFL.Z)
+            Point3D[] simpleCorners = {
+                new Point3D(dbl.X + edge, dbl.Y + edge, dbl.Z + edge),
+                new Point3D(dbl.X, dbl.Y + edge, dbl.Z + edge),
+                new Point3D(dbl.X, dbl.Y + edge, dbl.Z),
+                new Point3D(dbl.X + edge, dbl.Y + edge, dbl.Z),
+                new Point3D(dbl.X + edge, dbl.Y, dbl.Z + edge),
+                new Point3D(dbl.X, dbl.Y, dbl.Z + edge),
+                new Point3D(dbl.X, dbl.Y, dbl.Z),
+                new Point3D(dbl.X + edge, dbl.Y, dbl.Z)
             };
 
-            CreateCube(points);
-        }
-
-        public Block(Point3D[] points, string textureUrl) : base(textureUrl)
-        {
-            CreateCube(points);
+            // Link
+            this.simpleCorners = simpleCorners;
+            CreateCube();
+#if DEBUG
+            System.Console.WriteLine("Cube added @ " + new Point3D(dbl.X + .5, dbl.Y + .5, dbl.Z + .5));
+#endif
         }
         #endregion Constructors
 
         #region Helper Methods
-        private void CreateCube(Point3D[] points)
+        /// <summary>
+        /// Creates a cube with given fields
+        /// </summary>
+        private void CreateCube()
         {
-            // Corners, twice (TextureFix)
-            for (int i = 0; i < 2; i++) foreach (var point in points) corners.Add(point);
+            // Corners, twice
+            for (int i = 0; i < 2; i++) foreach (var point in simpleCorners) corners.Add(point);
 
             // Indices, grouped per 3 decide wich corners make a triangle            
-            foreach (var indice in INDICES) triangles.Add(indice);
+            foreach (var indice in Constants.INDICES_OUTSIDE) triangles.Add(indice);
 
             // Textures, Linked to corners as corners
-            texturePoints.Add(new Point(1, 0));
-            texturePoints.Add(new Point(0, 0));
-            texturePoints.Add(new Point(0, 1));
-            texturePoints.Add(new Point(1, 1));
-
-            texturePoints.Add(new Point(0, 0));
-            texturePoints.Add(new Point(1, 0));
-            texturePoints.Add(new Point(1, 1));
-            texturePoints.Add(new Point(0, 1));
-
-            texturePoints.Add(new Point(1, 1));
-            texturePoints.Add(new Point(0, 1));
-            texturePoints.Add(new Point(0, 0));
-            texturePoints.Add(new Point(1, 0));
-
-            texturePoints.Add(new Point(1, 0));
-            texturePoints.Add(new Point(0, 0));
-            texturePoints.Add(new Point(0, 1));
-            texturePoints.Add(new Point(1, 1));
+            foreach (var pointPair in Constants.TEXTUREPOINTS) texturePoints.Add(new Point(pointPair[0], pointPair[1]));
         }
         #endregion Helper Methods
     }
