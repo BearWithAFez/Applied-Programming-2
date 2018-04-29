@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeGame", "MazeGame\MazeGame.csproj", "{0EF58595-DE94-4463-90A6-DE1670370B4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deel 1", "Deel 1\Deel 1.csproj", "{0EF58595-DE94-4463-90A6-DE1670370B4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deel 2", "Deel 2\Deel 2.csproj", "{EC52990D-82FB-4589-A384-1C4E085AAF4C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{0EF58595-DE94-4463-90A6-DE1670370B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EF58595-DE94-4463-90A6-DE1670370B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EF58595-DE94-4463-90A6-DE1670370B4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC52990D-82FB-4589-A384-1C4E085AAF4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC52990D-82FB-4589-A384-1C4E085AAF4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC52990D-82FB-4589-A384-1C4E085AAF4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC52990D-82FB-4589-A384-1C4E085AAF4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
