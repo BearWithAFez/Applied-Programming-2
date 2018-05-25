@@ -15,16 +15,17 @@ namespace MazeGame
     public partial class MainWindow : Window
     {
         #region Fields
-        private OpenFileDialog ofd = new OpenFileDialog() { Filter = "json files (*.json)|*.json", RestoreDirectory = true }; // The OFD for Reading the Maze JSON's
-        private Model3DGroup modelGrp = new Model3DGroup(); // The container for each element (cubes and light)
-        private MazeData currentMazeData = new MazeData();  // The Maze data that's currently in use
-        private List<Block> maze;                           // Container for all blocks in maze
-        private Sphere player;                              // Player container
-        private bool[] tiltDirection = { false, false, false, false }; // Up,Right,Down,Left
-        private Vector3D translationVector;                 // Vector that keeps track of the new player location
-        private double tiltXAngle = 0;
-        private double tiltYAngle = 0;
-        private DispatcherTimer timer = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 0, 0, 1000 / Constants.FPS) }; // Animation timer (10ms == 100fps)
+        private OpenFileDialog ofd = new OpenFileDialog() { Filter = "json files (*.json)|*.json", RestoreDirectory = true };   // The OFD for Reading the Maze JSON's
+        private Model3DGroup modelGrp = new Model3DGroup();                                                                     // The container for each element (cubes and light)
+        private MazeData currentMazeData = new MazeData();                                                                      // The Maze data that's currently in use
+        private List<Block> maze;                                                                                               // Container for all blocks in maze
+        private Sphere player;                                                                                                  // Player container
+        private bool[] tiltDirection = { false, false, false, false };                                                          // Up,Right,Down,Left
+        private Vector3D translationVector;                                                                                     // Vector that keeps track of the new player location
+        private (double velocity, double angle, int movDir) axisX = (velocity: 0, angle: 0, movDir: 0);                         // Container for all the X physics
+        private (double velocity, double angle, int movDir) axisY = (velocity: 0, angle: 0, movDir: 0);                         // Container for all the Y physics
+        private DispatcherTimer timer = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 0, 0, 1000 / Constants.FPS) };    // Animation timer (10ms == 100fps)
+        private bool gameIsStarted = false;
         #endregion Fields
 
         #region Constructors
@@ -145,6 +146,12 @@ namespace MazeGame
                 case Key.NumPad4:
                     tiltDirection[3] = false; // left
                     break;
+                case Key.NumPad0:
+                    PauseResume(); // Pause the game or continue
+                    break;
+                case Key.Add:
+                    Respawn(); // Respawn the player and reset Physics
+                    break;
             }
         }
 
@@ -153,40 +160,24 @@ namespace MazeGame
         /// </summary>
         private void Timer_Tick(object sender, EventArgs e)
         {
-            // Tilt
-            var tiltVectorX = new Vector3D(-1, 0, 0);
-            var tiltVectorY = new Vector3D(0, 1, 0);
-            if (tiltDirection[0]) tiltXAngle += Constants.TILT_INCREMENTS;
-            if (tiltDirection[1]) tiltYAngle += Constants.TILT_INCREMENTS;
-            if (tiltDirection[2]) tiltXAngle -= Constants.TILT_INCREMENTS;
-            if (tiltDirection[3]) tiltYAngle -= Constants.TILT_INCREMENTS;
+            // Tilt the board (user input)
+            ApplyTilt();
 
-            // None
-            if (!(tiltDirection[0] || tiltDirection[2])) tiltXAngle += (tiltXAngle > 0) ? -Constants.TILT_INCREMENTS : (tiltXAngle < 0) ? Constants.TILT_INCREMENTS : 0;
-            if (!(tiltDirection[1] || tiltDirection[3])) tiltYAngle += (tiltYAngle > 0) ? -Constants.TILT_INCREMENTS : (tiltYAngle < 0) ? Constants.TILT_INCREMENTS : 0;
+            // Do the physics 
+            PhysicsItteration();
 
-            // Bounds
-            if (tiltXAngle > Constants.TILT_MAX) tiltXAngle = Constants.TILT_MAX;
-            if (tiltYAngle > Constants.TILT_MAX) tiltYAngle = Constants.TILT_MAX;
-            if (tiltXAngle < -Constants.TILT_MAX) tiltXAngle = -Constants.TILT_MAX;
-            if (tiltYAngle < -Constants.TILT_MAX) tiltYAngle = -Constants.TILT_MAX;
+            // Detections
+            if (PlayerIsDead())
+            {
+                player.UpdateMaterial(Constants.DEAD);
+                HaltMovement();
+            }
+            if (PlayerIsFinished())
+            {
+                player.UpdateMaterial(Constants.FINISH);
+                HaltMovement();
+            }
 
-            // Apply transform
-            var rotX = new RotateTransform3D() { Rotation = new AxisAngleRotation3D(tiltVectorX, tiltXAngle) };
-            var rotY = new RotateTransform3D() { Rotation = new AxisAngleRotation3D(tiltVectorY, tiltYAngle) };
-            modelGrp.Transform = new Transform3DGroup { Children = { rotX, rotY } };
-
-            // Move the ball
-            double forceX = (tiltXAngle > 0) ? 1 : (tiltXAngle < 0) ? -1 : 0;
-            double forceY = (tiltYAngle > 0) ? 1 : (tiltYAngle < 0) ? -1 : 0;
-            translationVector.X += (forceY / Constants.FPS) * Constants.PLAYER_SPEED;
-            translationVector.Y += (forceX / Constants.FPS) * Constants.PLAYER_SPEED;
-            if (player != null) player.Model.Transform = new TranslateTransform3D(translationVector);
-
-            if (PlayerCollision()) Console.WriteLine("Collide!");
-            if (PlayerIsDead()) Console.WriteLine("Dead!");
-            if (PlayerIsFinished()) Console.WriteLine("Finish!");
-            
         }
         #endregion Events
 
@@ -246,9 +237,12 @@ namespace MazeGame
                 }
             }
 
-            // Add the player aswell
-            AddPlayer();
+            // Add player and add physics
+            Respawn();
+
+            // Enable the game
             timer.Start();
+            gameIsStarted = true;
         }
 
         /// <summary>
@@ -264,7 +258,7 @@ namespace MazeGame
 
             // Add the new one
             var center = new Point3D(currentMazeData.Spawn[0], currentMazeData.Spawn[1], currentMazeData.Spawn[2]);
-            player = new Sphere(center, Constants.RADIUS, Constants.PHI, Constants.THETA, Constants.PLAYER_COLOR);
+            player = new Sphere(center, Constants.RADIUS, Constants.PHI, Constants.THETA, Constants.ALIVE);
             modelGrp.Children.Add(player.Model);
         }
 
@@ -281,11 +275,10 @@ namespace MazeGame
             return (Math.Sin(Constants.ToRadians(90 - fov / 2)) * ((longestSide / 2) / (Math.Sin(Constants.ToRadians(fov / 2))))) + currentMazeData.Size[2];
         }
 
-        private bool PlayerCollision()
+        private Block PlayerCollision()
         {
-            bool collision = false;
-            foreach (var cube in maze) if(cube.IsWall())if (cube.IsIn(player)) collision = true;
-            return collision;
+            foreach (var cube in maze) if (cube.IsWall()) if (cube.IsIn(player)) return cube;
+            return null;
         }
 
         private bool PlayerIsDead()
@@ -302,6 +295,125 @@ namespace MazeGame
         {
             foreach (var cube in maze) if (cube.IsUnder(player.CurrentCenter)) return cube;
             return null;
+        }
+
+        private void PauseResume()
+        {
+            if (!gameIsStarted) return;
+            if (timer.IsEnabled) timer.Stop();
+            else timer.Start();
+        }
+
+        private void Respawn()
+        {
+            // Reset the physics
+            axisX = (velocity: 0, angle: 0, movDir: 0);
+            axisY = (velocity: 0, angle: 0, movDir: 0);
+
+            // Re-add the player
+            AddPlayer();
+        }
+
+        private void ApplyTilt()
+        {
+            // Tilt
+            if (tiltDirection[0]) axisX.angle += Constants.TILT_INCREMENTS;
+            if (tiltDirection[1]) axisY.angle += Constants.TILT_INCREMENTS;
+            if (tiltDirection[2]) axisX.angle -= Constants.TILT_INCREMENTS;
+            if (tiltDirection[3]) axisY.angle -= Constants.TILT_INCREMENTS;
+
+            // None
+            if (!(tiltDirection[0] || tiltDirection[2])) axisX.angle += (axisX.angle > 0) ? -Constants.TILT_INCREMENTS : (axisX.angle < 0) ? Constants.TILT_INCREMENTS : 0;
+            if (!(tiltDirection[1] || tiltDirection[3])) axisY.angle += (axisY.angle > 0) ? -Constants.TILT_INCREMENTS : (axisY.angle < 0) ? Constants.TILT_INCREMENTS : 0;
+
+            // Bounds
+            if (axisX.angle > Constants.TILT_MAX) axisX.angle = Constants.TILT_MAX;
+            if (axisY.angle > Constants.TILT_MAX) axisY.angle = Constants.TILT_MAX;
+            if (axisX.angle < -Constants.TILT_MAX) axisX.angle = -Constants.TILT_MAX;
+            if (axisY.angle < -Constants.TILT_MAX) axisY.angle = -Constants.TILT_MAX;
+
+            // Apply transform
+            var rotX = new RotateTransform3D() { Rotation = new AxisAngleRotation3D(new Vector3D(-1, 0, 0), axisX.angle) };
+            var rotY = new RotateTransform3D() { Rotation = new AxisAngleRotation3D(new Vector3D(0, 1, 0), axisY.angle) };
+            modelGrp.Transform = new Transform3DGroup { Children = { rotX, rotY } };
+        }
+
+        private void PhysicsItteration()
+        {
+            // Get the block underneath the player
+            var bop = GetBlockUnderPlayer();
+            var bopt = (bop == null) ? Constants.BLOCKTYPES[0] : bop.type;
+
+            // Endstate?
+            if (PlayerIsDead() || PlayerIsFinished()) return;
+
+            // Get the whole physics calculation
+            var (displacementX, displacementY, velocityX, velocityY, moveDirX, moveDirY) = Physics.PhysicsLoop(bopt, axisY.angle, axisX.angle, Constants.BALL_WEIGHT, axisX.movDir, axisY.movDir, axisX.velocity, axisY.velocity);
+
+            // Try moving the Y
+            var prev_Y = translationVector.Y;   // Save previous position
+            translationVector.Y += displacementY;   // Try to move
+            if (player != null) player.Model.Transform = new TranslateTransform3D(translationVector);
+            var cube = PlayerCollision();
+            if (cube != null)   // Collision!
+            {
+                translationVector.Y = prev_Y;   // Reset
+                var cur_displacementY = .0;
+                while (cube.IsIn(player))   // Move step by step
+                {
+                    if (displacementY == 0) break;  // No movement
+                    if (Math.Abs(cur_displacementY) > Math.Abs(displacementY)) break;
+                    translationVector.Y += displacementY / Constants.BOUNCE_STEPS;
+                    cur_displacementY += displacementY / Constants.BOUNCE_STEPS;
+                    if (player != null) player.Model.Transform = new TranslateTransform3D(translationVector);
+                }
+                // Do bounce
+                moveDirY *= -1;
+                velocityY *= -cube.type.k;
+                translationVector.Y -= displacementY;
+                if (player != null) player.Model.Transform = new TranslateTransform3D(translationVector);
+            }
+
+            // Try moving the X
+            var prev_X = translationVector.X;   // Save previous position
+            translationVector.X += displacementX;   // Try to move
+            if (player != null) player.Model.Transform = new TranslateTransform3D(translationVector);
+            cube = PlayerCollision();
+            if (cube != null)   // Collision!
+            {
+                translationVector.X = prev_X;   // Reset
+                var cur_displacementX = .0;
+                while (cube.IsIn(player))   // Move step by step
+                {
+                    if (displacementX == 0) break;  // No movement
+                    if (Math.Abs(cur_displacementX) > Math.Abs(displacementX)) break;
+                    translationVector.X += displacementX / Constants.BOUNCE_STEPS;
+                    cur_displacementX += displacementX / Constants.BOUNCE_STEPS;
+                    if (player != null) player.Model.Transform = new TranslateTransform3D(translationVector);
+                }
+                // Do bounce
+                moveDirX *= -1;
+                velocityX *= -cube.type.k;
+                translationVector.X -= displacementX;
+                if (player != null) player.Model.Transform = new TranslateTransform3D(translationVector);
+            }
+
+            // Update the current physics
+            axisX.movDir = moveDirX;
+            axisX.velocity = velocityX;
+            axisY.movDir = moveDirY;
+            axisY.velocity = velocityY;
+        }
+
+        private void HaltMovement()
+        {
+            // Halt movement in X
+            axisX.movDir = 0;
+            axisX.velocity = 0;
+
+            // Halt movement in Y
+            axisY.movDir = 0;
+            axisY.velocity = 0;
         }
         #endregion Private methods
     }

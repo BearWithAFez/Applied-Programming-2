@@ -7,7 +7,7 @@
         xmlns:h="http://helix-toolkit.org/wpf"
         mc:Ignorable="d"
         Title="Maze Game" Height="550" Width="500" Loaded="Window_Loaded"
-        KeyDown="Window_KeyDown" KeyUp="Window_KeyUp">
+        KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" Icon="Resources/Icon.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

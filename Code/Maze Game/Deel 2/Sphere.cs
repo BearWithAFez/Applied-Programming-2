@@ -17,6 +17,7 @@ namespace MazeGame
         public Point3D CurrentCenter {
             get{
                 var trans = (Model.Transform as TranslateTransform3D);
+                if (trans == null) return center;
                 return Point3D.Add(center, new Vector3D(trans.OffsetX, trans.OffsetY, 0));
             }
         }
@@ -113,6 +114,11 @@ namespace MazeGame
 
             // See if distance between points is smaller than radius
             return (Point3D.Add(center, new Vector3D(x, y, z)) - other).Length < radius;
+        }
+
+        public void UpdateMaterial(Color newColor)
+        {
+            Model.Material = new DiffuseMaterial(new SolidColorBrush(newColor));
         }
         #endregion Methods
     }

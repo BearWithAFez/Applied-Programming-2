@@ -8,10 +8,8 @@ namespace MazeGame
     public struct Constants
     {
         // General
-        public static int FPS = 100;
-        public static double ToRadians(double angle) => Math.PI * angle / 180.0;
-        public static double PLAYER_SPEED = 3;
-        public static double TILT_INCREMENTS = 1;
+        public static int FPS = 60;
+        public static double TILT_INCREMENTS = 4;
         public static double TILT_MAX = 20;
         public static Brush BG_COLOR = Brushes.Gray; // I like gray
 
@@ -25,18 +23,30 @@ namespace MazeGame
             { 0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 4, 0, 3, 4, 3, 7, 1, 5, 6, 1, 6, 2, 9, 8, 12, 9, 12, 13, 10, 14, 15, 10, 15, 11 };
         public static List<BlockType> BLOCKTYPES = new BlockType[]  // All types of possible blocks
         {
-            new BlockType() { BlockCode = 'G', TexturePath = "Resources\\Ground.jpg" },
-            new BlockType() { BlockCode = 'W', TexturePath = "Resources\\Wall.jpg" },
-            new BlockType() { BlockCode = 'B', TexturePath = "Resources\\Base.jpg" },
-            new BlockType() { BlockCode = 'F', TexturePath = "Resources\\Finish.jpg" }
+            new BlockType() { BlockCode = 'G', TexturePath = "Resources\\Ground.jpg", µs = .2, µk = .1, k = .6 },
+            new BlockType() { BlockCode = 'W', TexturePath = "Resources\\Wall.jpg", µs = .2, µk = .1, k = .6 },
+            new BlockType() { BlockCode = 'B', TexturePath = "Resources\\Base.jpg", µs = .2, µk = .1, k = .6 },
+            new BlockType() { BlockCode = 'F', TexturePath = "Resources\\Finish.jpg", µs = .1, µk = .1, k = .6 }
         }.ToList(); 
 
         // Sphere
         public static double RADIUS = .5;       // Best half of cube edge
         public static int PHI = 20;             // Best between 10-1000
         public static int THETA = 20;           // Best between 10-1000
-        public static Color PLAYER_COLOR =      // I like orange
-            Colors.Orange;
+        public static Color ALIVE = Colors.Orange; // I like orange
+        public static Color DEAD = Colors.IndianRed; // I like orange
+        public static Color FINISH = Colors.LightGreen; // I like orange
+
+
+        // Physics
+        public static double G = 1;  // In nature its 9.81 m/s/s
+        public static double MAX_V = 10000;
+        public static double DISPLACEMENT_SCALING = .0001;
+        public static double BALL_WEIGHT = 1;
+        public static int BOUNCE_STEPS = 10;
+
+        // Methods
+        public static double ToRadians(double angle) => Math.PI * angle / 180.0;    
     }
 
     public struct MazeData
@@ -52,6 +62,9 @@ namespace MazeGame
     {
         public string TexturePath;
         public char BlockCode;
+        public double µs;   // Static friction
+        public double µk;   // Kinetic friction
+        public double k;    // Bounce coeficient
         public override string ToString() => "" + BlockCode;
     }
 }

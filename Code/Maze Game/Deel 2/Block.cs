@@ -7,7 +7,7 @@ namespace MazeGame
     {
         #region Fields
         private Point3D[] simpleCorners; // Front top-right CCW & Back top-right CCW
-        private BlockType type;
+        public BlockType type;
         #endregion Fields
 
         #region Constructors
@@ -59,9 +59,9 @@ namespace MazeGame
         public override bool IsIn(Point3D other)
         {
             // Dimensions check
-            if (other.X >= corners[0].X || other.X <= corners[1].X) return false;
-            if (other.Y >= corners[0].Y || other.Y <= corners[4].Y) return false;
-            if (other.Z >= corners[0].Z || other.Z <= corners[2].Z) return false;
+            if (other.X >= corners[0].X || other.X <= corners[1].X) return false;   // 0 == RVB       1  == LVB
+            if (other.Y >= corners[0].Y || other.Y <= corners[4].Y) return false;   // 4 == RAB
+            if (other.Z >= corners[0].Z || other.Z <= corners[2].Z) return false;   // 2 == LVO
             return true;
         }
 
