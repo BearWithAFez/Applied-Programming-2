@@ -99,7 +99,7 @@ namespace MazeGame
                 CreateFromCurrentData();
             }
         }
-
+        
         /// <summary>
         /// Key Press
         /// </summary>
@@ -210,21 +210,21 @@ namespace MazeGame
         private void CreateFromCurrentData()
         {
             // Set Limits, string and counter
-            var X = currentMazeData.Size[0];
-            var Y = currentMazeData.Size[1];
-            var Z = currentMazeData.Size[2];
+            double X = currentMazeData.Size[0];
+            double Y = currentMazeData.Size[1];
+            double Z = currentMazeData.Size[2];
             var codeString = currentMazeData.CodeSingle;
             var counter = -1;
             maze = new List<Block>();
 
             // Loop over all Layers
-            for (var z = -Z / 2; z < Z / 2; z++)
+            for (double z = -Z / 2; z < Z / 2; z++)
             {
                 // Loop over all Rows
-                for (var y = Y / 2; y > -Y / 2; y--)
+                for (double y = Y / 2; y > -Y / 2; y--)
                 {
                     // Loop over all Cubes
-                    for (var x = -X / 2; x < X / 2; x++)
+                    for (double x = -X / 2; x < X / 2; x++)
                     {
                         counter++;
                         if (codeString[counter] == 'E') continue; // Empty block
@@ -277,7 +277,7 @@ namespace MazeGame
 
         private Block PlayerCollision()
         {
-            foreach (var cube in maze) if (cube.IsWall()) if (cube.IsIn(player)) return cube;
+            foreach (var cube in maze) if (cube.type.isWall) if (cube.IsIn(player)) return cube;
             return null;
         }
 

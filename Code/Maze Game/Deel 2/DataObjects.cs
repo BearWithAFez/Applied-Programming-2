@@ -23,19 +23,23 @@ namespace MazeGame
             { 0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 4, 0, 3, 4, 3, 7, 1, 5, 6, 1, 6, 2, 9, 8, 12, 9, 12, 13, 10, 14, 15, 10, 15, 11 };
         public static List<BlockType> BLOCKTYPES = new BlockType[]  // All types of possible blocks
         {
-            new BlockType() { BlockCode = 'G', TexturePath = "Resources\\Ground.jpg", µs = .2, µk = .1, k = .6 },
-            new BlockType() { BlockCode = 'W', TexturePath = "Resources\\Wall.jpg", µs = .2, µk = .1, k = .6 },
-            new BlockType() { BlockCode = 'B', TexturePath = "Resources\\Base.jpg", µs = .2, µk = .1, k = .6 },
-            new BlockType() { BlockCode = 'F', TexturePath = "Resources\\Finish.jpg", µs = .1, µk = .1, k = .6 }
+            new BlockType() { BlockCode = 'G', TexturePath = "Resources\\Ground.jpg", µs = .2, µk = .1, k = 1, isWall = false },
+            new BlockType() { BlockCode = 'B', TexturePath = "Resources\\Base.jpg", µs = .2, µk = .1, k = 1, isWall = false },
+            new BlockType() { BlockCode = 'F', TexturePath = "Resources\\Finish.jpg", µs = .2, µk = .1, k = 1, isWall = false },
+            new BlockType() { BlockCode = 'I', TexturePath = "Resources\\Ice.jpg", µs = .001, µk = .001, k = 1, isWall = false },
+            new BlockType() { BlockCode = 'S', TexturePath = "Resources\\Sand.jpg", µs = .3, µk = .3, k = 1, isWall = false },
+            new BlockType() { BlockCode = 'W', TexturePath = "Resources\\Wall.jpg", µs = 1, µk = 1, k = .6, isWall = true },
+            new BlockType() { BlockCode = 'J', TexturePath = "Resources\\Jello.jpg", µs = 1, µk = 1, k = 1.3, isWall = true },
+            new BlockType() { BlockCode = 'P', TexturePath = "Resources\\Pillow.jpg", µs = 1, µk = 1, k = .01, isWall = true }
         }.ToList(); 
 
         // Sphere
-        public static double RADIUS = .5;       // Best half of cube edge
-        public static int PHI = 20;             // Best between 10-1000
-        public static int THETA = 20;           // Best between 10-1000
-        public static Color ALIVE = Colors.Orange; // I like orange
-        public static Color DEAD = Colors.IndianRed; // I like orange
-        public static Color FINISH = Colors.LightGreen; // I like orange
+        public static double RADIUS = .5;               // Best half of cube edge
+        public static int PHI = 20;                     // Best between 10-1000
+        public static int THETA = 20;                   // Best between 10-1000
+        public static Color ALIVE = Colors.Orange;      // I like orange
+        public static Color DEAD = Colors.IndianRed;    // I like this red
+        public static Color FINISH = Colors.LightGreen; // I like smooth greens
 
 
         // Physics
@@ -65,6 +69,7 @@ namespace MazeGame
         public double µs;   // Static friction
         public double µk;   // Kinetic friction
         public double k;    // Bounce coeficient
+        public bool isWall;
         public override string ToString() => "" + BlockCode;
     }
 }

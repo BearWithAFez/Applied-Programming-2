@@ -1,0 +1,27 @@
+﻿<Window x:Class="MazeGame.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MazeGame"
+        xmlns:h="http://helix-toolkit.org/wpf"
+        mc:Ignorable="d"
+        Title="Maze Game" Height="550" Width="500" Loaded="Window_Loaded"
+        KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" Icon="Resources/Icon.png">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <h:HelixViewport3D x:Name="HelixViewport" Grid.Row="1"/>
+        <DockPanel Grid.Row="0">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_Menu">
+                    <MenuItem Header="_Open Maze" Click="MenuItemOpen_Click"/>
+                    <MenuItem Header="_Generate Maze" Click="MenuItemGenerate_Click"/>
+                </MenuItem>
+            </Menu>
+            <StackPanel></StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>
